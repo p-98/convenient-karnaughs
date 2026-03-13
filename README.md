@@ -1,5 +1,8 @@
 # convenient-karnaughs
 
+In contrast to many other packages, this package is not inspired by any LaTeX
+package, but tries to take full advantage of typst to be
+
 - **⚡ powerfull**: unlimited number of variables
 - **☀️ convenient**: draw implicants with typst functions, borders will never
   overlap
