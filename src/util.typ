@@ -142,7 +142,7 @@
 
 //   tidy.show-module(
 //     tidy.parse-module(
-//       read("./util.typ"),
+//       read("util.typ"),
 //       name: "Util",
 //       scope: (
 //         cartesian: cartesian,

@@ -1,6 +1,6 @@
 
-#import "src/point.typ": neighbour, point, x, y
-#import "src/to.typ": to-string
+#import "point.typ": neighbour, point, x, y
+#import "to.typ": to-string
 
 /// -> rectangle
 #let rectangle(
@@ -136,7 +136,7 @@
 
 //   tidy.show-module(
 //     tidy.parse-module(
-//       read("./kv.typ"),
+//       read("kv.typ"),
 //       name: "rectangle",
 //       scope: (
 //         _merge-rectangles: merge-rectangles,

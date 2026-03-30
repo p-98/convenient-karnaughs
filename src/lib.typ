@@ -1,14 +1,14 @@
-#import "src/util.typ": (
+#import "util.typ": (
   all, cartesian, filter-by-index, imap, indices, is-unique, join, max-by,
   mk-dict, partition, partition-by-index, power-set, set-difference, singleton,
   switch, update, zip, zip-with,
 )
-#import "src/to.typ": to-arguments, to-bool, to-content, to-int, to-string
-#import "src/rectangle.typ": (
+#import "to.typ": to-arguments, to-bool, to-content, to-int, to-string
+#import "rectangle.typ": (
   adjacent-sides, just-insides, merge-rectangles, rectangle,
 )
-#import "src/rectangle.typ" as r
-#import "src/point.typ": neighbour, point, x, y
+#import "rectangle.typ" as r
+#import "point.typ": neighbour, point, x, y
 #import calc: div-euclid, even, inf, max, min, odd, pow, rem-euclid
 #import "@preview/tidy:0.4.3": styles.default.show-type
 
@@ -565,7 +565,7 @@
 
   tidy.show-module(
     tidy.parse-module(
-      read("src/lib.typ"),
+      read("lib.typ"),
       name: "karnaugh-map",
       scope: (
         karnaugh-map: karnaugh-map,

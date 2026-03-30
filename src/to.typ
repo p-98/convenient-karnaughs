@@ -1,4 +1,4 @@
-#import "src/util.typ": is-int, max-by, partition
+#import "util.typ": is-int, max-by, partition
 
 #let to-bool(v) = if (type(v) == int) {
   if v == 0 { false } else { true }
