@@ -4,7 +4,7 @@
 #import "./util.typ": (
   all, cartesian, filter-by-index, imap, indices, is-unique, join, max-by,
   mk-dict, partition, partition-by-index, power-set, set-difference, singleton,
-  switch, update, zip, zip-with,
+  sum, switch, update, zip, zip-with,
 )
 #import "./to.typ": to-arguments, to-bool, to-content, to-int, to-string
 #import "./rectangle.typ": (
@@ -237,8 +237,12 @@
   grid(
     columns: (var-cell-size,) * vars-y.len() + (function-cell-size,) * w,
     rows: (var-cell-size,) * vars-x.len() + (function-cell-size,) * h,
-    row-gutter: (0.25em,) * (vars-x.len() - 1) + (0.5em, 0em),
-    column-gutter: (0.25em,) * (vars-y.len() - 1) + (0.5em, 0em),
+    row-gutter: (0.25em,) * max(0, vars-x.len() - 1)
+      + if vars-x.len() > 0 { (0.5em,) }
+      + (0em,),
+    column-gutter: (0.25em,) * max(0, vars-y.len() - 1)
+      + if vars-y.len() > 0 { (0.5em,) }
+      + (0em,),
     ..join(("x", "y").map(axis => {
       let other-axis = if axis == "x" { "y" } else { "x" }
       let span = if axis == "x" { "colspan" } else { "rowspan" }
@@ -276,15 +280,6 @@
   )
 }
 
-#let limit-to(x: none, y: none, reflow: false, body) = context {
-  let size = measure(body)
-  let factor = min(
-    1,
-    if x != none { x.to-absolute() / size.width.to-absolute() } else { inf },
-    if y != none { y.to-absolute() / size.height.to-absolute() } else { inf },
-  )
-  scale(factor * 100%, reflow: reflow, body)
-}
 /// -> content
 #let _render-american-labels(
   /// -> array
@@ -306,8 +301,8 @@
   grid(
     columns: (auto,) * 2 + (function-cell-size,) * w,
     rows: (auto,) * 2 + (function-cell-size,) * h,
-    column-gutter: (0.75em, 0.5em, 0em),
-    row-gutter: (0.75em, 0.5em, 0em),
+    column-gutter: if vars.len() > 1 { (0.75em, 0.5em) } + (0em,),
+    row-gutter: if vars.len() > 0 { (0.75em, 0.5em) } + (0em,),
     grid.cell(x: 2, y: 0, colspan: w, align: center + horizon, label-x),
     grid.cell(x: 0, y: 2, rowspan: h, align: center + horizon, label-y),
     ..join(("x", "y").map(axis => {
@@ -320,13 +315,9 @@
           (axis): a + 2,
           (other-axis): 1,
           align: center + horizon,
-          "0": limit-to(
-            x: function-cell-size,
-            reflow: true,
-            i-axis-vars
-              .map(((i, _)) => to-content(to-int(_variable(i, point))))
-              .join(),
-          ),
+          "0": i-axis-vars
+            .map(((i, _)) => to-content(to-int(_variable(i, point))))
+            .join(),
         )))
       })
     })),
@@ -343,18 +334,61 @@
   labels: "european",
 )
 
-/// A Karnaugh map with an unlimited number of variables and simple minterm
+/// A Karnaugh map with an unlimited number of variables and simple implicant
 /// drawing.
-/// ```example
-/// #karnaugh-map(
-///   (1, 0, 1, 0, 0, 0, 1, 0),
-///   vars: ($a$, $b$, $c$),
-///   implicants: (
-///     (a, b, c) => not a and not c, // blue
-///     (a, b, c) => b and not c,     // red
-///   ),
+///
+/// Consider this an example of a simple karnaugh map for a truth table:
+/// #show table.cell.where(x: 1): text.with(weight: "bold")
+/// #grid(
+///   columns: 2,
+///   gutter: 5pt,
+///   align: horizon,
+///   block(inset: 5pt, {
+///     show table.cell.where(x: 3): math.bold
+///     table(
+///       columns: 4,
+///       stroke: none,
+///       align: center,
+///       table.header($a$, $b$, $c$, table.vline(), $f$),
+///       table.hline(),
+///       $0$, $0$, $0$, $1$,
+///       $0$, $0$, $1$, $0$,
+///       $0$, $1$, $0$, $1$,
+///       $0$, $1$, $1$, $0$,
+///       $1$, $0$, $0$, $0$,
+///       $1$, $0$, $1$, $0$,
+///       $1$, $1$, $0$, $1$,
+///       $1$, $1$, $1$, $0$,
+///     )
+///   }),
+///   ```example
+///   #karnaugh-map(
+///     // truth table order!
+///     (1, 0, 1, 0, 0, 0, 1, 0),
+///     vars: ($a$, $b$, $c$),
+///     implicants: (
+///       // typst functions!
+///       (a, b, c) => not a and not c,
+///       (a, b, c) => b and not c,
+///     ),
+///   )
+///
+///
+///
+///
+///
+///
+///
+///   ```
 /// )
-/// ```
+///
+/// Note, how the order in which you specify the function values is the same as
+/// in the truth table.
+/// Also note, that the borders _never_ overlap.
+/// (In fact, we even minize the amount of inset borders.)
+///
+/// There are other formats to specify function values, implicants and variables
+/// as well as other options:
 #let karnaugh-map(
   /// The number or names of the variables.
   /// ```example
@@ -393,6 +427,8 @@
   /// #karnaugh-map(
   ///   vars: 3,
   ///   (false, false, none, true, false, true, none, true),
+  ///   // or
+  /// <<< (0, 0, -1, 1, 0, 1, -1, 1),
   /// )
   /// #karnaugh-map(
   ///   vars: 3,
@@ -493,7 +529,9 @@
     let f = imap(f, f: (i, v) => _bool-like-arg(("f", i), v))
     point => {
       let a = _assignment(vars, point)
-      f.at(zip-with(indices(a).rev(), a, f: (i, v) => int(v) * pow(2, i)).sum())
+      f.at(sum(default: 0, zip-with(indices(a).rev(), a, f: (i, v) => (
+        int(v) * pow(2, i)
+      ))))
     }
   } else {
     panic(_arg-error("f", "function or array", f))

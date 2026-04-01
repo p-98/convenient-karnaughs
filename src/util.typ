@@ -208,6 +208,7 @@
 #let indices(xs) = range(xs.len())
 #let singleton(x) = (x,)
 #let id(x) = x
+#let sum(xs, default: none) = xs.sum(default: default)
 /// -> array | dict
 #let map(
   /// -> function
