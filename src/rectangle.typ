@@ -1,6 +1,6 @@
 
-#import "src/point.typ": neighbour, point, x, y
-#import "src/to.typ": to-string
+#import "./point.typ": neighbour, point, x, y
+#import "./to.typ": to-string
 
 /// -> rectangle
 #let rectangle(
