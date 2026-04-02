@@ -66,30 +66,6 @@
   )
 }
 
-/// A type representing a boolean or "don't care". Anywhere a `bool-like` is
-/// required, one of the values ```typc true```, ```typc false```,
-/// ```typc none```, ```typc 1```, ```typc 0```, or ```typc -1``` is expected.
-///
-/// The values ```typc true``` and ```typc false``` represent the respective
-/// boolean values while ```typc none``` represents a #box[don't-care]. For
-/// convenience, the integers ```typc 1```, ```typc 0```, and ```typc -1``` can
-/// be used, respectively.
-/// -> bool-like
-#let bool-like(
-  /// -> bool | none | 1 | 0 | -1
-  v,
-) = if type(v) == bool or v == none {
-  v
-} else if v == 0 {
-  false
-} else if v == 1 {
-  true
-} else if v == -1 {
-  none
-} else {
-  panic("Expected boolean or none or -1 or 0 or 1, but got " + repr(v) + ".")
-}
-
 /// -> bool | none
 #let _bool-like-arg(
   /// -> str | array
@@ -325,8 +301,8 @@
   )
 }
 
-/// Default styles of the karnaugh-map.
-/// -> style
+/// Default value of @karnaugh-map.style exposed as variable.
+/// -> dictionary
 #let default-style = (
   /// -> array
   implicant-colors: (blue, red, green, purple, yellow, teal, black),
@@ -337,7 +313,7 @@
 /// A Karnaugh map with an unlimited number of variables and simple implicant
 /// drawing.
 ///
-/// Consider this an example of a simple karnaugh map for a truth table:
+/// Here is an example of a simple karnaugh map for a truth table:
 /// #show table.cell.where(x: 1): text.with(weight: "bold")
 /// #grid(
 ///   columns: 2,
@@ -363,97 +339,115 @@
 ///   }),
 ///   ```example
 ///   #karnaugh-map(
-///     // truth table order!
-///     (1, 0, 1, 0, 0, 0, 1, 0),
 ///     vars: ($a$, $b$, $c$),
+///     (1, 0, 1, 0, 0, 0, 1, 0),
+///     // ⬑ truth table order!
 ///     implicants: (
-///       // typst functions!
 ///       (a, b, c) => not a and not c,
+///       // ⬑ typst functions!
 ///       (a, b, c) => b and not c,
+///       // ⬑ borders never overlap!
 ///     ),
 ///   )
-///
-///
-///
-///
 ///
 ///
 ///
 ///   ```
 /// )
 ///
-/// Note, how the order in which you specify the function values is the same as
-/// in the truth table.
-/// Also note, that the borders _never_ overlap.
-/// (In fact, we even minize the amount of inset borders.)
-///
 /// There are other formats to specify function values, implicants and variables
 /// as well as other options:
 #let karnaugh-map(
   /// The number or names of the variables.
+  ///
   /// ```example
   /// #karnaugh-map(
   ///   vars: 3,
+  /// <<<  // or
+  /// <<<  vars: ($x_2$, $x_1$, $x_0$),
   ///   (x2, x1, x0) => x0,
-  /// )
-  /// ```
-  /// ```example
-  /// #karnaugh-map(
-  ///   vars: ($c$, $b$, $a$),
-  ///   (c, b, a) => a,
   /// )
   /// ```
   /// -> int | array
   vars: none,
-  /// The boolean function or an array of the function values. If an array,
-  /// order is read off of a truth table where the last variable changes the
-  /// fastest. Dont-care terms are represented as ```typc none```.
-  /// ```example
-  /// #karnaugh-map(
-  ///   vars: 3,
-  ///   (x2, x1, x0) => x0 and (x1 or x2),
+  /// The function or an array of the #bool-like function values. If an
+  /// array, the order is read off of a truth table where the last variable
+  /// changes the fastest.
+  ///
+  /// #grid(
+  ///   columns: 2,
+  ///   gutter: 5pt,
+  ///   align: horizon,
+  ///   block(inset: 5pt, {
+  ///     show table.cell.where(x: 2): math.bold
+  ///     table(
+  ///       columns: 3,
+  ///       stroke: none,
+  ///       align: center,
+  ///       table.header($x_1$, $x_0$, table.vline(), $f$),
+  ///       table.hline(),
+  ///       $0$, $0$, $0$,
+  ///       $0$, $1$, $1$,
+  ///       $1$, $0$, $*$,
+  ///       $1$, $1$, $*$,
+  ///     )
+  ///   }),
+  ///   ```example
+  ///   #karnaugh-map(
+  ///     vars: 2,
+  ///     (x1, x0) =>
+  ///       if x1 {none} else {x0},
+  ///   <<<  // or
+  ///   <<<  (false, true, none, none),
+  ///   <<<  // or
+  ///   <<<  (0, 1, -1, -1),
+  ///   )
+  ///   ```
   /// )
-  /// ```
-  /// ```example
-  /// // x2 x1 x0 | x0 ∧ (x1 ∨ x2)
-  /// //  0  0  0 |        0
-  /// //  0  0  1 |        0
-  /// //  0  1  0 |        *
-  /// //  0  1  1 |        1
-  /// //  1  0  0 |        0
-  /// //  1  0  1 |        1
-  /// //  1  1  0 |        *
-  /// //  1  1  1 |        1
-  /// #karnaugh-map(
-  ///   vars: 3,
-  ///   (false, false, none, true, false, true, none, true),
-  ///   // or
-  /// <<< (0, 0, -1, 1, 0, 1, -1, 1),
-  /// )
-  /// #karnaugh-map(
-  ///   vars: 3,
-  ///   (0, 0, -1, 1, 0, 1, -1, 1),
-  /// )
-  /// ```
   /// -> function | array
   f,
+  /// A list of implicants, which can either be functions or arrays of
+  /// #bool-like values representing variable assignments.
+  ///
+  /// They are automatically rendered so that no two borders are directly on top
+  /// of each other. It even finds the layout with the minimal amount of
+  /// adjustments.
+  ///
+  /// ```example
+  /// #karnaugh-map(
+  ///   vars: 3,
+  ///   (0, 1, 0, 0, 0, 1, 0, 0),
+  ///   implicants: (
+  ///     (x2, x1, x0) => not x1 and x0,
+  /// <<<    // or
+  /// <<<    (none, false, true),
+  /// <<<    // or
+  /// <<<    (-1, 0, 1),
+  ///     (x2, x1, x0) => not x2 and x0,
+  ///     // ⬑ automatically adjusted
+  ///   )
+  /// )
+  /// ```
   /// -> array
   implicants: (),
   /// Styling configuration that is merged with the defaults. The dictionary may
   /// contain the following keys:
   ///
-  /// #set terms(indent: 0.5em, hanging-indent: 0em)
-  /// / style.implicant-colors: #h(1.2em) #show-types("array", "function") \
-  ///   Either a list of colors or a function calculates a color from the
+  /// #let show-parameter-sub-block = show-parameter-sub-block.with(
+  ///   function-name: "karnaugh-map",
+  ///   parameter-name: "style"
+  /// )
+  /// #show-parameter-sub-block("implicant-colors", ("array", "function"))[
+  ///   Either a list of colors or a function that calculates a color from the
   ///   implicant index. There must be at least as many colors as implicants.
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
   ///     vars: 2,
-  ///     (x1, x0) => x0,
+  ///     (1, 0, 0, 1),
   ///     implicants: (
-  ///       (x1, x0) => not x0,
-  ///       (x1, x0) => x0,
+  ///       (x1, x0) => not x1 and not x0,
+  ///       (x1, x0) => x1 and x0,
   ///     ),
   ///     style: (
   ///       implicant-colors: (black, fuchsia),
@@ -464,7 +458,7 @@
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
   ///     vars: 3,
-  ///     (x2, x1, x0) => x0,
+  ///     (x2, x1, x0) => none,
   ///     implicants: (
   ///       (x2, x1, x0) => not x0 and not x2,
   ///       (x2, x1, x0) => x0 and not x2,
@@ -472,17 +466,20 @@
   ///       (x2, x1, x0) => not x0 and x2,
   ///     ),
   ///     style: (
-  ///       implicant-colors: i => {
+  ///       implicant-colors: (i) => {
   ///         color.hsl(-25deg * i, 100%, 50%)
   ///       },
   ///     ),
   ///   )
   ///   ```
-  /// / style.labels:
-  ///   #h(1.2em) #show-types("\"american\"", "\"european\"", "function") \
+  /// ]
+  /// #show-parameter-sub-block(
+  ///   "labels",
+  ///   ("\"american\"", "\"european\"", "function")
+  /// )[
   ///   Values `"american"` and `"european"` are presets but a custom function
-  ///   can be provided. It takes the variables and function grid as arguments,
-  ///   where each function grid cell is ```typc 1em``` wide.
+  ///   can be provided. It takes the variables and the function grid as
+  ///   arguments, where each function grid cell is ```typc 1em``` wide.
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
@@ -503,6 +500,7 @@
   ///     ),
   ///   )
   ///   ```
+  /// ]
   /// -> dictionary
   style: (
     implicant-colors: (blue, red, green, purple, yellow, teal, black),
@@ -598,26 +596,100 @@
   })
 }
 
+//===---- Documentation ---------------------------------------------------===//
 #{
   import "@preview/tidy:0.4.3"
+
   let default = tidy.styles.default
+  let show-type = default.show-type.with(style-args: (colors: default.colors))
+
+  let first-heading-level = 1
+
+  let show-parameter-sub-block(
+    function-name: none,
+    parameter-name: none,
+    name,
+    types,
+    content,
+  ) = block(breakable: false, inset: (left: 0.5em), {
+    box[
+      #heading(level: first-heading-level + 4, parameter-name + "." + name)
+      #if function-name != none and parameter-name != none {
+        label(function-name + "." + parameter-name + "." + name)
+      }
+    ]
+    h(1.2em)
+    types.map(show-type).join([ #text("or", size: 0.6em) ])
+    parbreak()
+    content
+  })
+
+  show link: set text(maroon)
 
   tidy.show-module(
     tidy.parse-module(
       read("./lib.typ"),
       name: "karnaugh-map",
       scope: (
+        bool-like: link(<bool-like>, [boolean-like]),
         karnaugh-map: karnaugh-map,
+        show-parameter-sub-block: show-parameter-sub-block,
         show-types: (..ts) => ts
           .pos()
-          .map(default.show-type.with(style-args: (colors: default.colors)))
+          .map(show-type)
           .join([ #text("or", size: .6em) ]),
       ),
     ),
-    break-param-descriptions: true,
-    first-heading-level: 1,
+    style: (
+      show-outline: (module-doc, style-args: (:)) => {
+        text("Functions", weight: "bold")
+        default.show-outline(module-doc, style-args: style-args)
+
+        text("Types", weight: "bold")
+        list(link(<bool-like>)[bool-like])
+      },
+      show-type: default.show-type,
+      show-parameter-list: default.show-parameter-list,
+      show-parameter-block: (
+        function-name: none,
+        name,
+        types,
+        content,
+        style-args,
+        show-default: false,
+        default: none,
+      ) => context {
+        let break-param-descriptions = (
+          measure(content).height > page.height * 0.5
+        )
+        tidy.styles.default.show-parameter-block(
+          function-name: function-name,
+          name,
+          types,
+          content,
+          (..style-args, break-param-descriptions: break-param-descriptions),
+          show-default: show-default,
+          default: default,
+        )
+      },
+      show-function: default.show-function,
+      show-variable: default.show-variable,
+      show-reference: default.show-reference,
+      show-example: default.show-example,
+    ),
+    first-heading-level: first-heading-level,
     omit-private-definitions: true,
     omit-private-parameters: true,
     sort-functions: none,
   )
 }
+
+== bool-like <bool-like>
+A type representing a boolean or "don't care".
+Anywhere this type is required, one of the values ```typc true```, ```typc false```,
+```typc none```, ```typc 1```, ```typc 0```, or ```typc -1``` is expected.
+
+The values ```typc true``` and ```typc false``` represent the respective
+boolean values while ```typc none``` represents a #box["don't care"]. For
+convenience, the integers ```typc 1```, ```typc 0```, and ```typc -1``` can
+be used, respectively.
