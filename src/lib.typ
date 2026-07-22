@@ -161,6 +161,7 @@
     let (i, o) = (implicant-inset, implicant-wrap-outset)
     let inset(side) = { if wraps(side) { -o } else { (inset-level + 1) * i } }
     place(
+      top + left,
       dx: rect_.left * cell-size + inset(r.left),
       dy: rect_.top * cell-size + inset(r.top),
       rect(
@@ -590,7 +591,7 @@
 
   //===---- producing content -------------------------------------------===//
   (style.labels)(vars, {
-    place(_render-function-grid(f, vars))
+    place(top + left, _render-function-grid(f, vars))
     let (implicant-colors: colors) = style
     _render-implicants(vars, colors, implicants)
   })
