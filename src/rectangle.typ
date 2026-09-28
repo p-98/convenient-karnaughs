@@ -1,6 +1,5 @@
 
 #import "./point.typ": neighbour, point, x, y
-#import "./to.typ": to-string
 
 /// -> rectangle
 #let rectangle(
@@ -107,16 +106,16 @@
       ((rect-ids, rects), point) => {
         let neighbour = side => neighbour(side, point)
         let (rect-id, rect) = if points.contains(neighbour(left)) {
-          let rect-id = rect-ids.at(to-string(neighbour(left)))
+          let rect-id = rect-ids.at(repr(neighbour(left)))
           (rect-id, rects.at(rect-id))
         } else if points.contains(neighbour(top)) {
-          let rect-id = rect-ids.at(to-string(neighbour(top)))
+          let rect-id = rect-ids.at(repr(neighbour(top)))
           (rect-id, rects.at(rect-id))
         } else {
-          (to-string(point), ())
+          (repr(point), ())
         }
         (
-          rect-ids: (..rect-ids, to-string(point): rect-id),
+          rect-ids: (..rect-ids, repr(point): rect-id),
           rects: (..rects, (rect-id): (..rect, point)),
         )
       }

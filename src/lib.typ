@@ -6,7 +6,7 @@
   mk-dict, partition, partition-by-index, power-set, set-difference, singleton,
   sum, switch, update, zip, zip-with,
 )
-#import "./to.typ": to-arguments, to-bool, to-content, to-int, to-string
+#import "./to.typ": to-arguments, to-bool
 #import "./rectangle.typ": (
   adjacent-sides, just-insides, merge-rectangles, rectangle,
 )
@@ -203,7 +203,7 @@
 }
 
 /// -> content
-#let _render-european-labels(
+#let _render-line-labels(
   /// -> array
   vars,
   /// -> content
@@ -258,7 +258,7 @@
 }
 
 /// -> content
-#let _render-american-labels(
+#let _render-bitstring-labels(
   /// -> array
   vars,
   /// -> content
@@ -293,7 +293,7 @@
           (other-axis): 1,
           align: center + horizon,
           "0": i-axis-vars
-            .map(((i, _)) => to-content(to-int(_variable(i, point))))
+            .map(((i, _)) => if _variable(i, point) [1] else [0])
             .join(),
         )))
       })
@@ -307,62 +307,23 @@
 #let default-style = (
   /// -> array
   implicant-colors: (blue, red, green, purple, yellow, teal, black),
-  /// -> "european" | "american" | function
-  labels: "european",
+  /// -> "line" | "bitstring" | function
+  labels: "line",
 )
 
-/// A Karnaugh map with an unlimited number of variables and simple implicant
-/// drawing.
+/// A Karnaugh map. The following examples illustrate common use cases.
 ///
-/// Here is an example of a simple karnaugh map for a truth table:
-/// #show table.cell.where(x: 1): text.with(weight: "bold")
-/// #grid(
-///   columns: 2,
-///   gutter: 5pt,
-///   align: horizon,
-///   block(inset: 5pt, {
-///     show table.cell.where(x: 3): math.bold
-///     table(
-///       columns: 4,
-///       stroke: none,
-///       align: center,
-///       table.header($a$, $b$, $c$, table.vline(), $f$),
-///       table.hline(),
-///       $0$, $0$, $0$, $1$,
-///       $0$, $0$, $1$, $0$,
-///       $0$, $1$, $0$, $1$,
-///       $0$, $1$, $1$, $0$,
-///       $1$, $0$, $0$, $0$,
-///       $1$, $0$, $1$, $0$,
-///       $1$, $1$, $0$, $1$,
-///       $1$, $1$, $1$, $0$,
-///     )
-///   }),
-///   ```example
-///   #karnaugh-map(
-///     vars: ($a$, $b$, $c$),
-///     (1, 0, 1, 0, 0, 0, 1, 0),
-///     // ⬑ truth table order!
-///     implicants: (
-///       (a, b, c) => not a and not c,
-///       // ⬑ typst functions!
-///       (a, b, c) => b and not c,
-///       // ⬑ borders never overlap!
-///     ),
-///   )
+/// A karnaugh map for a truth table:
+/// #_example-1
 ///
-///
-///
-///   ```
-/// )
-///
-/// There are other formats to specify function values, implicants and variables
-/// as well as other options:
+/// A karnaugh map for a function and with different label styles:
+/// #_example-2
 #let karnaugh-map(
-  /// The number or names of the variables.
+  /// The number or names of the variables, of which there can be arbitrarily
+  /// many.
   ///
-  /// ```example
-  /// #karnaugh-map(
+  /// ```examplec
+  /// karnaugh-map(
   ///   vars: 3,
   /// <<<  // or
   /// <<<  vars: ($x_2$, $x_1$, $x_0$),
@@ -393,8 +354,8 @@
   ///       $1$, $1$, $*$,
   ///     )
   ///   }),
-  ///   ```example
-  ///   #karnaugh-map(
+  ///   ```examplec
+  ///   karnaugh-map(
   ///     vars: 2,
   ///     (x1, x0) =>
   ///       if x1 {none} else {x0},
@@ -414,8 +375,8 @@
   /// of each other. It even finds the layout with the minimal amount of
   /// adjustments.
   ///
-  /// ```example
-  /// #karnaugh-map(
+  /// ```examplec
+  /// karnaugh-map(
   ///   vars: 3,
   ///   (0, 1, 0, 0, 0, 1, 0, 0),
   ///   implicants: (
@@ -476,9 +437,9 @@
   /// ]
   /// #show-parameter-sub-block(
   ///   "labels",
-  ///   ("\"american\"", "\"european\"", "function")
+  ///   ("\"bitstring\"", "\"line\"", "function")
   /// )[
-  ///   Values `"american"` and `"european"` are presets but a custom function
+  ///   Values `"bitstring"` and `"line"` are presets, but a custom function
   ///   can be provided. It takes the variables and the function grid as
   ///   arguments, where each function grid cell is ```typc 1em``` wide.
   ///   ```examplec
@@ -487,7 +448,7 @@
   ///     vars: 3,
   ///     (x2, x1, x0) => x0,
   ///     style: (
-  ///       labels: "american",
+  ///       labels: "bitstring",
   ///     ),
   ///   )
   ///   ```
@@ -497,7 +458,7 @@
   ///     vars: 3,
   ///     (x2, x1, x0) => x0,
   ///     style: (
-  ///       labels: "european",
+  ///       labels: "line",
   ///     ),
   ///   )
   ///   ```
@@ -505,7 +466,7 @@
   /// -> dictionary
   style: (
     implicant-colors: (blue, red, green, purple, yellow, teal, black),
-    labels: "european",
+    labels: "line",
   ),
 ) = {
   //===---- parsing arguments (most of this function) -------------------===//
@@ -559,16 +520,16 @@
   })
   let s = (:..default-style, ..style)
   let style = (
-    labels: if s.labels == "european" {
-      _render-european-labels
-    } else if s.labels == "american" {
-      _render-american-labels
+    labels: if s.labels == "line" {
+      _render-line-labels
+    } else if s.labels == "bitstring" {
+      _render-bitstring-labels
     } else if type(s.labels) == function {
       s.labels
     } else {
       panic(_arg-error(
         "style.labels",
-        "\"european\" or \"american\" or function",
+        "\"line\" or \"bitstring\" or function",
         s.labels,
       ))
     },
@@ -598,6 +559,72 @@
 }
 
 //===---- Documentation ---------------------------------------------------===//
+#let _example-1 = {
+  show table.cell.where(x: 1): text.with(weight: "bold")
+  grid(
+    columns: 2,
+    gutter: 5pt,
+    align: horizon,
+    block(inset: 5pt, {
+      show table.cell.where(x: 3): math.bold
+      table(
+        columns: 4,
+        stroke: none,
+        align: center,
+        table.header($a$, $b$, $c$, table.vline(), $f$),
+        table.hline(),
+        $0$, $0$, $0$, $1$,
+        $0$, $0$, $1$, $0$,
+        $0$, $1$, $0$, $1$,
+        $0$, $1$, $1$, $0$,
+        $1$, $0$, $0$, $0$,
+        $1$, $0$, $1$, $*$,
+        $1$, $1$, $0$, $1$,
+        $1$, $1$, $1$, $0$,
+      )
+    }),
+    ```examplec
+    karnaugh-map(
+      vars: ($a$, $b$, $c$),
+      (1, 0, 1, 0, 0, -1, 1, 0),
+      // ⬑ truth table order
+      implicants: (
+        (a, b, c) => not a and not c,
+        // ⬑ typst functions
+        (a, b, c) => b and not c,
+        // ⬑ borders don't overlap
+      ),
+    )
+
+
+
+    ```,
+  )
+}
+#let _example-2 = context grid(
+  columns: 2,
+  gutter: 5pt,
+  align: horizon,
+  block(inset: 5pt, {
+    hide(table(
+      columns: 4,
+      $0$, $0$, $0$, $bold(0)$,
+    ))
+    place(center + horizon, $ bold(¬x_1 ∧ x_0) $)
+  }),
+  ```examplec
+  >>> set text(font: "libertinus serif")
+  karnaugh-map(
+    vars: 3,
+    (x2, x1, x0) => not x1 and x0,
+    implicants: (
+      (-1, 0, 1),
+    ),
+    style: (labels: "bitstring")
+  )
+  ```,
+)
+
 #{
   import "@preview/tidy:0.4.3"
 
@@ -626,6 +653,7 @@
   })
 
   show link: set text(maroon)
+  set heading(numbering: "1.")
 
   tidy.show-module(
     tidy.parse-module(
@@ -639,6 +667,8 @@
           .pos()
           .map(show-type)
           .join([ #text("or", size: .6em) ]),
+        _example-1: _example-1,
+        _example-2: _example-2,
       ),
     ),
     style: (
@@ -683,14 +713,16 @@
     omit-private-parameters: true,
     sort-functions: none,
   )
+
+  [
+    == bool-like <bool-like>
+    A type representing a boolean or "don't care".
+    Anywhere this type is required, one of the values ```typc true```, ```typc false```,
+    ```typc none```, ```typc 1```, ```typc 0```, or ```typc -1``` is expected.
+
+    The values ```typc true``` and ```typc false``` represent the respective
+    boolean values while ```typc none``` represents a #box["don't care"]. For
+    convenience, the integers ```typc 1```, ```typc 0```, and ```typc -1``` can
+    be used, respectively.
+  ]
 }
-
-== bool-like <bool-like>
-A type representing a boolean or "don't care".
-Anywhere this type is required, one of the values ```typc true```, ```typc false```,
-```typc none```, ```typc 1```, ```typc 0```, or ```typc -1``` is expected.
-
-The values ```typc true``` and ```typc false``` represent the respective
-boolean values while ```typc none``` represents a #box["don't care"]. For
-convenience, the integers ```typc 1```, ```typc 0```, and ```typc -1``` can
-be used, respectively.

@@ -3,20 +3,23 @@
 In contrast to many other packages, this package is not inspired by any LaTeX
 package, but tries to take full advantage of typst to be
 
-- **⚡ powerfull**: unlimited number of variables
-- **☀️ convenient**: draw implicants with typst functions, borders will never
-  overlap
-- **🎛️ configurable**: set label styles, colors and variables names
-- **ℹ debuggable**: proper input validation and error messages
+- **☀️ convenient**: different formats for function values (e.g. array in
+  truth-table order) and implicants (e.g. typst functions)
+- **🎛️ flexibel**: different label styles, unlimited number of variables
+- **🔋 batteries included**: input validation and error messages, implicant
+  borders don't overlap while visual impact is minimized.
+
+This project was 100% written by humans.
 
 ## Usage
 
 <!-- TODO: link -->
 
-[The full documentation can be found here.](https://www.github.com/p-98/convenient-karnaughs)
+[The documentation can be found here.](https://www.github.com/p-98/convenient-karnaughs/releases)
 
-Here is a simple example for a common use case.
-For the following truth table:
+<!-- The following examples illustrate common use cases.
+
+A karnaugh map for a thruth table:
 
 | a   | b   | c   |     |  f(a, b, c) |
 | --- | --- | --- | --- | ----------- |
@@ -47,9 +50,11 @@ functions:
 
 Which results in:
 
-<!-- TODO: link -->
+<!-- TODO: link -- >
 
 ![Karnaugh map showcase.](https://www.github.com/p-98/convenient-karnaughs)
 
 Note how the borders of implicants will _never_ overlap.
 (In fact, we even minimize the number of inset borders.)
+
+A karnaugh map for a function and with different label styles: -->

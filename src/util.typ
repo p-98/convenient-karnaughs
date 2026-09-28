@@ -1,5 +1,3 @@
-// cartesian(("A", "B"), (1, 2)), (("A", 1), ("A", 2), ("B", 1), ("B", 2))
-
 /// N-ary cartesian product.
 ///
 /// ```examplec
@@ -207,7 +205,6 @@
 #let zip(xs, ..xss) = xs.zip(..xss)
 #let indices(xs) = range(xs.len())
 #let singleton(x) = (x,)
-#let id(x) = x
 #let sum(xs, default: none) = xs.sum(default: default)
 /// -> array | dict
 #let map(
