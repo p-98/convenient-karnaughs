@@ -9,52 +9,64 @@ package, but tries to take full advantage of typst to be
 - **🔋 batteries included**: input validation and error messages, implicant
   borders don't overlap while visual impact is minimized.
 
-This project was 100% written by humans.
+This project is 100% written by humans.
 
 ## Usage
 
-<!-- TODO: link -->
+For full documentation, take a look at the [manual](docs/manual.pdf). The
+following examples illustrate some common use cases.
 
-[The documentation can be found here.](https://www.github.com/p-98/convenient-karnaughs/releases)
+<!-- <table>
+  <tbody>
+    <tr>
+      <th scope="row">a</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th scope="row">b</th>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th scope="row">c</th>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th scope="row">f(a, b, c)</th>
+      <td>1</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>*</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table> -->
 
-<!-- The following examples illustrate common use cases.
+A karnaugh map for a truth table:
+![Example Usage 1](docs/example-1-standalone.svg)
 
-A karnaugh map for a thruth table:
-
-| a   | b   | c   |     |  f(a, b, c) |
-| --- | --- | --- | --- | ----------- |
-| 0   | 0   | 0   |     | 1           |
-| 0   | 0   | 1   |     | 0           |
-| 0   | 1   | 0   |     | 1           |
-| 0   | 1   | 1   |     | 0           |
-| 1   | 0   | 0   |     | 0           |
-| 1   | 0   | 1   |     | 0           |
-| 1   | 1   | 0   |     | 1           |
-| 1   | 1   | 1   |     | 0           |
-
-You can write the following code, where the order of the function values
-directly corresponds to the truth table and the implicants are just typst
-functions:
-
-```typ
-#import "@preview/convenient-karnaughs:1.0.0": karnaugh-map
-#karnaugh-map(
-  (1, 0, 1, 0, 0, 0, 1, 0),
-  vars: ($a$, $b$, $c$),
-  implicants: (
-    (a, b, c) => not a and not c, // blue
-    (a, b, c) => b and not c,     // red
-  ),
-)
-```
-
-Which results in:
-
-<!-- TODO: link -- >
-
-![Karnaugh map showcase.](https://www.github.com/p-98/convenient-karnaughs)
-
-Note how the borders of implicants will _never_ overlap.
-(In fact, we even minimize the number of inset borders.)
-
-A karnaugh map for a function and with different label styles: -->
+A karnaugh map for a function and with different label styles:
+![Example Usage 2](docs/example-2-standalone.svg)
