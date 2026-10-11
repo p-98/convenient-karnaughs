@@ -11,7 +11,7 @@ convenient-karnaughs-dir = $(packages-dir)/packages/preview/convenient-karnaughs
 version-dir = $(convenient-karnaughs-dir)/$(version)
 
 docs/example-1-standalone.svg: docs/*.typ src/*/*.typ
-docs/example-2-standalong.svg: docs/*.typ src/*/*.typ
+docs/example-2-standalone.svg: docs/*.typ src/*/*.typ
 docs/manual.pdf: docs/*.typ src/*/*.typ
 docs: docs/example-1-standalone.svg docs/example-2-standalone.svg docs/manual.pdf
 all: docs
