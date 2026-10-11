@@ -327,14 +327,14 @@
   ///
   /// ```examplec
   /// karnaugh-map(
-  ///   vars: 3,
+  ///   3,
   /// <<<  // or
-  /// <<<  vars: ($x_2$, $x_1$, $x_0$),
+  /// <<<  ($x_2$, $x_1$, $x_0$),
   ///   (x2, x1, x0) => x0,
   /// )
   /// ```
   /// -> int | array
-  vars: none,
+  vars,
   /// The function or an array of the #bool-like function values. If an
   /// array, the order is read off of a truth table where the last variable
   /// changes the fastest.
@@ -359,7 +359,7 @@
   ///   }),
   ///   ```examplec
   ///   karnaugh-map(
-  ///     vars: 2,
+  ///     2,
   ///     (x1, x0) =>
   ///       if x1 {none} else {x0},
   ///   <<<  // or
@@ -380,7 +380,7 @@
   ///
   /// ```examplec
   /// karnaugh-map(
-  ///   vars: 3,
+  ///   3,
   ///   (0, 1, 0, 0, 0, 1, 0, 0),
   ///   implicants: (
   ///     (x2, x1, x0) => not x1 and x0,
@@ -408,7 +408,7 @@
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
-  ///     vars: 2,
+  ///     2,
   ///     (1, 0, 0, 1),
   ///     implicants: (
   ///       (x1, x0) => not x1 and not x0,
@@ -422,7 +422,7 @@
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
-  ///     vars: 3,
+  ///     3,
   ///     (x2, x1, x0) => none,
   ///     implicants: (
   ///       (x2, x1, x0) => not x0 and not x2,
@@ -448,7 +448,7 @@
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
-  ///     vars: 3,
+  ///     3,
   ///     (x2, x1, x0) => x0,
   ///     style: (
   ///       labels: "bitstring",
@@ -458,7 +458,7 @@
   ///   ```examplec
   ///   >>> set text(font: "libertinus serif")
   ///   karnaugh-map(
-  ///     vars: 3,
+  ///     3,
   ///     (x2, x1, x0) => x0,
   ///     style: (
   ///       labels: "line",

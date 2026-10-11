@@ -1,7 +1,7 @@
 #import "/src/lib.typ": karnaugh-map
 
 #karnaugh-map(
-  vars: ($a$, $b$, $c$),
+  ($a$, $b$, $c$),
   (1, 0, 1, 0, 0, -1, 1, 0),
   // ⬑ truth table order
   implicants: (
