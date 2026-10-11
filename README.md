@@ -66,7 +66,20 @@ following examples illustrate some common use cases.
 </table> -->
 
 A karnaugh map for a truth table:
-![Example Usage 1](docs/example-1-standalone.svg)
+![
+  A truth table of three variables along with the code and rendering of a
+  corresponding karnaugh map. The function values in the code match the truth
+  table order and the implicants are specified as Typst functions. The implicant
+  borders are inset so that they don't overlap.
+](docs/example-1-standalone.svg)
 
 A karnaugh map for a function and with different label styles:
-![Example Usage 2](docs/example-2-standalone.svg)
+![
+  A function of three variables along with the code and rendering of a
+  corresponding karnaugh map. The function values in the code are given in terms
+  of a Typst function and the implicant is specified as an array of variable
+  assignments. The labels use a bitstring style instead of a line style.
+](docs/example-2-standalone.svg)
+
+If you would like to see a new feature or a different way to specify inputs,
+then just report it [here](https://github.com/p-98/convenient-karnaughs/issues)!

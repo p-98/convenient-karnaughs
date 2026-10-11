@@ -6,7 +6,7 @@
   // ⬑ truth table order
   implicants: (
     (a, b, c) => not a and not c,
-    // ⬑ typst functions
+    // ⬑ Typst functions
     (a, b, c) => b and not c,
     // ⬑ borders don't overlap
   ),

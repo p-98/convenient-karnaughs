@@ -10,7 +10,7 @@
 #example(
   context block(
     width: measure(placeholder).width,
-    $ f(x_1, x_2) \ = \ x_1 ∧ x_2 $,
+    $ f(x_2, x_1, x_0) \ = \ ¬x_1 ∧ x_0 $,
   ),
   "./example-2-code.typ",
 )
